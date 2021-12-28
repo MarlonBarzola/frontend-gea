@@ -23,11 +23,11 @@ class LibraryDataService {
 
   /* deleteAll() {
     return http.delete(`/companies`);
-  }
+  } */
 
   findByTitle(title) {
-    return http.get(`/companies?title=${title}`);
-  } */
+    return http.get(`/libraries/search/${title}`);
+  }
 }
 
 export default new LibraryDataService();

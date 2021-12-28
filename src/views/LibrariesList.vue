@@ -1,5 +1,8 @@
 <template>
-  <div class="list row">
+
+  <search-library @searchLibrary="search" />
+
+  <div class="list row my-5">
     <div class="col-md-6">
       <h4>Biblioteca</h4>
       <ul class="list-group">
@@ -15,7 +18,6 @@
       </ul>
     </div>
     <div class="col-md-6" v-if="library">
-        
       <h4>{{ titleLibrary }}</h4>
 
       <form v-on:submit.prevent="editLibrary" class="mb-2">
@@ -34,17 +36,21 @@
         >
         </textarea>
 
-         <select
+        <select
           class="form-control"
           id="category"
           required
           v-model="category_id"
           name="category"
         >
-            <option disabled value="">Selecciona una categoría</option>
-            <option :value="category.id" v-for="category of categories.data" :key="category.id">
-                {{ category.name }}
-            </option>
+          <option disabled value="">Selecciona una categoría</option>
+          <option
+            :value="category.id"
+            v-for="category of categories.data"
+            :key="category.id"
+          >
+            {{ category.name }}
+          </option>
         </select>
       </form>
 
@@ -56,13 +62,16 @@
       </button>
     </div>
   </div>
+  
 </template>
 
 <script>
 import LibraryDataService from "../services/LibraryDataService";
 import CategoryDataService from "../services/CategoryDataService";
+import SearchLibrary from '../components/SearchLibrary.vue';
 
 export default {
+  components: { SearchLibrary },
   name: "library-list",
   data() {
     return {
@@ -87,30 +96,30 @@ export default {
     },
     currentLibrary(library) {
       this.library = library;
-      this.titleLibrary = library.name
+      this.titleLibrary = library.name;
 
       this.name = library.name;
       this.body = library.body;
       this.category_id = library.category_id;
     },
     removeLibrary(library) {
-        if (window.confirm("¿Deseas eliminar esto?")) {
-            LibraryDataService.delete(library)
-                .then((response) => {
-                this.refreshList();
-                console.log(response);
-            })
-            .catch((e) => {
-                console.log(e);
-            });
-        }
+      if (window.confirm("¿Deseas eliminar esto?")) {
+        LibraryDataService.delete(library)
+          .then((response) => {
+            this.refreshList();
+            console.log(response);
+          })
+          .catch((e) => {
+            console.log(e);
+          });
+      }
     },
     refreshList() {
       this.retrieveLibrary();
       this.library = "";
     },
     retrieveCategories() {
-        CategoryDataService.getAll()
+      CategoryDataService.getAll()
         .then((response) => {
           this.categories = response.data;
           console.log(this.categories.data);
@@ -123,19 +132,34 @@ export default {
       const data = {
         name: this.name,
         body: this.body,
-        category_id: this.category_id
+        category_id: this.category_id,
       };
       LibraryDataService.update(this.library.id, data)
-        .then(response => {
-            console.log(response)
-            this.titleLibrary = response.data.data.name
-            this.retrieveLibrary();
-            alert('Actualización completada');
+        .then((response) => {
+          console.log(response);
+          this.titleLibrary = response.data.data.name;
+          this.retrieveLibrary();
+          alert("Actualización completada");
         })
         .catch((e) => {
           console.log(e);
         });
     },
+    search( name ) {
+        if( name ) {
+            LibraryDataService.findByTitle(name)
+            .then(response => {
+                this.libraries = response.data;
+                this.library = "";
+                console.log(response.data);
+            })
+            .catch(e => {
+                console.log(e);
+            }); 
+        } else {
+            this.retrieveLibrary();
+        }
+    }
   },
   mounted() {
     this.retrieveLibrary();

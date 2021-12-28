@@ -7,11 +7,11 @@ const routes =  [
     name: "libraries",
     component: () => import("./views/LibrariesList")
   },
-  /* {
-    path: "/tutorials/:id",
-    name: "tutorial-details",
-    component: () => import("./components/Tutorial")
-  }, */
+  {
+    path: "/rent",
+    name: "rent",
+    component: () => import("./views/RentLibrary")
+  },
   {
     path: "/add",
     name: "add",
