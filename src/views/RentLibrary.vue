@@ -59,7 +59,8 @@ export default {
     },
 
     retrieveUserLibrary() {
-      const user_id = 1;
+
+      const user_id = 1; //ID del usuario logueado
 
       RentDataService.get(user_id)
         .then((response) => {
